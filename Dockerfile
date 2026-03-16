@@ -2,11 +2,16 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install dependencies first (cached layer)
+# 1. Install system build tools (Crucial for -slim images)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy model files and server
+# 3. Copy model files and server code
 COPY server.py .
 COPY image_checkpoint.pth .
 COPY chat_checkpoint.pth .
